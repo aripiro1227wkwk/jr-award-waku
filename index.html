@@ -216,24 +216,33 @@ textarea {
 }
 
 .tableWrap {
+  width: 100%;
   overflow-x: auto;
   background: white;
   border-radius: 10px;
+  border: 1px solid #ddd;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 1050px;
+  table-layout: fixed;
 }
 
 th,
 td {
-  border-bottom: 1px solid #eee;
-  padding: 9px;
-  font-size: 12px;
-  text-align: left;
+  border: 1px solid #ddd;
+  padding: 7px 4px;
+  font-size: 11px;
+  text-align: center;
   vertical-align: middle;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+th {
+  background: #fff0f2;
+  font-weight: bold;
 }
 
 th {
@@ -342,6 +351,29 @@ tr.mailed {
   .books {
     grid-template-columns: 1fr 1fr;
   }
+}
+.siteFooter {
+  text-align: center;
+  padding: 20px 10px 35px;
+  font-size: 12px;
+  color: #777;
+}
+
+.topButton {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: #e60023;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0,0,0,.2);
+  z-index: 9999;
 }
 </style>
 </head>
@@ -491,7 +523,16 @@ tr.mailed {
 </section>
 
 </main>
+<footer class="siteFooter">
+  作成者：@mtkwk_info1126
+</footer>
 
+<button
+  class="topButton"
+  onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+  aria-label="ページ上部へ戻る">
+  ▲
+</button>
 
 <script>
 
