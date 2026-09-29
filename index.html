@@ -512,7 +512,7 @@ tr.mailed {
     <label>コメント</label>
     <textarea id="comment" placeholder="コメント・メモ"></textarea>
 
-    <button class="saveBtn" onclick="saveEntry()">登録する</button>
+    <button id="saveEntryBtn" class="saveBtn" onclick="saveEntry()">登録する</button>
   </div>
 
  <div class="card notice">
@@ -674,7 +674,7 @@ let entries =
 JSON.parse(localStorage.getItem("jrAwardWakuEntries")) || [];
 
 let currentManageType = "exchange";
-
+let editingId = null;
 
 /* =========================
    初期化
@@ -828,21 +828,51 @@ function saveEntry(){
   }
 
 
-  const entry = {
-    id: Date.now(),
-    type,
-    partner,
-    partnerMember,
-    receive,
-    give: type === "exchange" ? give : "",
-    votes,
-    reason,
-    comment,
-    written: false,
-    mailed: false
-  };
+   if(editingId !== null){
 
-  entries.push(entry);
+    const index =
+      entries.findIndex(e => e.id === editingId);
+
+    if(index !== -1){
+
+      entries[index] = {
+        ...entries[index],
+        type,
+        partner,
+        partnerMember,
+        receive,
+        give: type === "exchange" ? give : "",
+        votes,
+        reason,
+        comment
+      };
+
+    }
+
+    editingId = null;
+
+    document.getElementById("saveEntryBtn").textContent =
+      "登録する";
+
+  }else{
+
+    const entry = {
+      id: Date.now(),
+      type,
+      partner,
+      partnerMember,
+      receive,
+      give: type === "exchange" ? give : "",
+      votes,
+      reason,
+      comment,
+      written: false,
+      mailed: false
+    };
+
+    entries.push(entry);
+
+  }
 
   saveEntries();
 
@@ -1131,6 +1161,7 @@ function renderManage(){
     <th>票数</th>
     <th>理由</th>
     <th>コメント</th>
+    <th>編集</th>
     <th>削除</th>
   </tr>
 
@@ -1176,9 +1207,15 @@ function renderManage(){
 
       <td>${escapeHtml(e.reason)}</td>
 
-      <td>${escapeHtml(e.comment)}</td>
-
+      <td>${escapeHtml(e.comment)}</td>  
       <td>
+        <button
+          class="editBtn"
+          onclick="editEntry(${e.id})">
+          ✏️
+        </button>
+      </td>
+            <td>
         <button
           class="deleteBtn"
           onclick="deleteEntry(${e.id})">
@@ -1234,7 +1271,78 @@ function toggleMailed(id){
   renderManage();
 }
 
+/* =========================
+   編集
+========================= */
 
+function editEntry(id){
+
+  const e =
+    entries.find(x => x.id === id);
+
+  if(!e) return;
+
+
+  editingId = id;
+
+
+  // 種類
+  document.querySelector(
+    `input[name="type"][value="${e.type}"]`
+  ).checked = true;
+
+  changeType();
+
+
+  // 入力内容を戻す
+  document.getElementById("partner").value =
+    e.partner || "";
+
+  document.getElementById("partnerMember").value =
+    e.partnerMember || "";
+
+  document.getElementById("receiveDepartment").value =
+    e.receive || "";
+
+  document.getElementById("giveDepartment").value =
+    e.give || "";
+
+  document.getElementById("votes").value =
+    e.votes || "";
+
+  document.getElementById("reason").value =
+    e.reason || "";
+
+  document.getElementById("comment").value =
+    e.comment || "";
+
+
+  // ボタンを編集モードにする
+  document.getElementById("saveEntryBtn").textContent =
+    "変更を保存";
+
+
+  // 入力ページへ移動
+  document.querySelectorAll(".page")
+    .forEach(p => p.classList.remove("active"));
+
+  document.querySelectorAll(".tab")
+    .forEach(t => t.classList.remove("active"));
+
+  document.getElementById("inputPage")
+    .classList.add("active");
+
+  document.querySelector(".tab")
+    .classList.add("active");
+
+
+  // ページ上部へ
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
 /* =========================
    削除
 ========================= */
