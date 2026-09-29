@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ジュニア大賞交換枠管理リスト</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Meiryo UI", Meiryo, sans-serif;
+  background: #fff7f8;
+  color: #222;
+}
+
+header {
+  background: white;
+  border-bottom: 3px solid #e60023;
+  padding: 18px 12px 12px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0 0 14px;
+  font-size: 22px;
+  color: #d90022;
+}
+
+.tabs {
+  display: flex;
+  max-width: 900px;
+  margin: auto;
+  gap: 5px;
+}
+
+.tab {
+  flex: 1;
+  border: none;
+  background: #f3f3f3;
+  padding: 11px 4px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  font-size: 13px;
+}
+
+.tab.active {
+  background: #e60023;
+  color: white;
+}
+
+main {
+  max-width: 950px;
+  margin: auto;
+  padding: 18px 12px 50px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.card {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 7px rgba(0,0,0,.05);
+}
+
+h2 {
+  font-size: 18px;
+  margin-top: 0;
+  border-left: 5px solid #e60023;
+  padding-left: 9px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin: 12px 0 5px;
+  font-size: 14px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  padding: 10px;
+  font-size: 16px;
+  background: white;
+}
+
+textarea {
+  min-height: 75px;
+  resize: vertical;
+}
+
+.books {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.totalBox {
+  margin-top: 12px;
+  background: #fff0f2;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  color: #d90022;
+}
+
+.typeButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.typeLabel {
+  flex: 1;
+  border: 2px solid #ddd;
+  border-radius: 9px;
+  padding: 11px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.typeLabel input {
+  width: auto;
+  margin-right: 5px;
+}
+
+.saveBtn {
+  width: 100%;
+  border: none;
+  border-radius: 9px;
+  padding: 13px;
+  margin-top: 18px;
+  background: #e60023;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.notice {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.7;
+}
+
+.sectionTitle {
+  margin: 24px 0 10px;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.departmentRow {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 9px;
+  padding: 11px;
+  margin-bottom: 7px;
+}
+
+.departmentTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.departmentName {
+  font-weight: bold;
+}
+
+.departmentCount {
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+.progress {
+  height: 7px;
+  background: #eee;
+  border-radius: 10px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: #e60023;
+}
+
+.departmentRow.error {
+  border: 2px solid #e60023;
+  background: #fff0f2;
+}
+
+.errorText {
+  color: #e60023;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 6px;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  background: white;
+  border-radius: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1050px;
+}
+
+th,
+td {
+  border-bottom: 1px solid #eee;
+  padding: 9px;
+  font-size: 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+th {
+  background: #fff0f2;
+  white-space: nowrap;
+}
+
+td.status {
+  text-align: center;
+}
+
+td.status input {
+  width: 18px;
+  height: 18px;
+}
+
+tr.mailed {
+  background: #eeeeee;
+  color: #777;
+}
+
+.deleteBtn {
+  border: none;
+  background: #ffe5e9;
+  border-radius: 7px;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.empty {
+  padding: 25px;
+  text-align: center;
+  color: #888;
+  background: white;
+  border-radius: 9px;
+}
+
+.wakuRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 9px;
+  padding: 13px;
+  margin-bottom: 7px;
+  gap: 12px;
+}
+
+.wakuName {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.wakuCount {
+  font-size: 18px;
+  color: #d90022;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.subTabs {
+  display: flex;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.subTab {
+  flex: 1;
+  border: 1px solid #ddd;
+  background: white;
+  padding: 9px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.subTab.active {
+  background: #222;
+  color: white;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 18px;
+  }
+
+  .tab {
+    font-size: 11px;
+    padding: 10px 2px;
+  }
+
+  main {
+    padding: 12px 9px 40px;
+  }
+
+  .card {
+    padding: 13px;
+  }
+
+  .books {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>ジュニア大賞交換枠管理リスト</h1>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showPage('inputPage',this)">入力</button>
+    <button class="tab" onclick="showPage('departmentPage',this)">部門別管理</button>
+    <button class="tab" onclick="showPage('managePage',this)">管理</button>
+    <button class="tab" onclick="showPage('wakuPage',this)">わく</button>
+  </div>
+</header>
+
+<main>
+
+<!-- 入力 -->
+<section id="inputPage" class="page active">
+
+  <div class="card">
+    <h2>購入冊数</h2>
+
+    <div class="books">
+      <div>
+        <label>通常版</label>
+        <input type="number" id="normalBooks" min="0" value="0">
+      </div>
+
+      <div>
+        <label>ちっこい版</label>
+        <input type="number" id="smallBooks" min="0" value="0">
+      </div>
+    </div>
+
+    <div class="totalBox">
+      合計 <span id="bookTotal">0</span>冊
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>交換・買取を登録</h2>
+
+    <label>種類</label>
+
+    <div class="typeButtons">
+      <label class="typeLabel">
+        <input type="radio" name="type" value="exchange" checked onchange="changeType()">
+        交換
+      </label>
+
+      <label class="typeLabel">
+        <input type="radio" name="type" value="purchase" onchange="changeType()">
+        買取
+      </label>
+    </div>
+
+    <label>交換相手</label>
+    <input type="text" id="partner" placeholder="@ユーザー名など">
+
+    <label>相手の担当</label>
+    <input type="text" id="partnerMember" placeholder="担当">
+
+    <label>貰う部門</label>
+    <select id="receiveDepartment"></select>
+
+    <div id="giveDepartmentArea">
+      <label>渡す部門</label>
+      <select id="giveDepartment"></select>
+    </div>
+
+    <label>票数</label>
+    <input type="number" id="votes" min="1" placeholder="票数">
+
+    <label>理由</label>
+    <textarea id="reason" placeholder="理由"></textarea>
+
+    <label>コメント</label>
+    <textarea id="comment" placeholder="コメント・メモ"></textarea>
+
+    <button class="saveBtn" onclick="saveEntry()">登録する</button>
+  </div>
+
+  <div class="card notice">
+    入力内容はこの端末・このブラウザに保存されます。<br>
+    ブラウザの保存データを削除した場合や、別の端末・ブラウザを使用した場合はデータは引き継がれません。
+  </div>
+
+</section>
+
+
+<!-- 部門別 -->
+<section id="departmentPage" class="page">
+
+  <div class="card">
+    <h2>部門ごとの管理</h2>
+    <div>
+      購入冊数：<strong><span id="departmentBookTotal">0</span>冊</strong>
+    </div>
+  </div>
+
+  <div class="sectionTitle">交換</div>
+  <div id="exchangeDepartmentList"></div>
+
+  <div class="sectionTitle">買取</div>
+  <div id="purchaseDepartmentList"></div>
+
+</section>
+
+
+<!-- 管理 -->
+<section id="managePage" class="page">
+
+  <div class="card">
+    <h2>登録内容の管理</h2>
+
+    <div class="subTabs">
+      <button id="exchangeManageBtn" class="subTab active" onclick="showManage('exchange')">
+        交換
+      </button>
+
+      <button id="purchaseManageBtn" class="subTab" onclick="showManage('purchase')">
+        買取
+      </button>
+    </div>
+  </div>
+
+  <div id="manageTable"></div>
+
+</section>
+
+
+<!-- わく -->
+<section id="wakuPage" class="page">
+
+  <div class="card">
+    <h2>わく</h2>
+    <div class="notice">
+      交換で貰う票数＋買取の票数を部門ごとに表示しています。
+    </div>
+  </div>
+
+  <div id="wakuList"></div>
+
+</section>
+
+</main>
+
+
+<script>
+
+/* =========================
+   部門一覧
+   今後追加するときはここに追加
+========================= */
+
+const departments = [
+"1.恋人にしたい",
+"2.友だちにしたい",
+"3.弟にしたい",
+"4.お兄さんにしたい",
+"5.先輩になってほしい",
+"6.後輩になってほしい",
+"7.学校の先生になってほしい",
+"8.キスしてみたい",
+"9.いちばんおしゃれ",
+"10.私服がダサそう",
+"11.いちばんセクシー",
+"12.いちばんおもしろい",
+"13.いちばん美形",
+"14.いちばん美声",
+"15.ダンスがカッコいい",
+"16.グローバルに活躍しそう",
+"17.演技がうまい",
+"18.絵が下手そう",
+"19.恋人に尽くしそう",
+"20.女装が似合いそう",
+"21.秒でメールの返信がきそう",
+"22.天然キャラっぽい",
+"23.泣き虫そう",
+"24.ナルシストっぽい",
+"25.ニュースキャスターになりそう",
+"26.いちばんいいコンビ",
+"27.私のリア恋枠",
+"28.いちばんMCがうまい",
+"29.意外とメガネが似合いそう",
+"30.御曹司っぽい",
+"31.手料理が食べたい",
+"32.いい匂いがしそう",
+"33.いちばんもちもち",
+"34.犬っぽい",
+"35.猫っぽい",
+"36.少女マンガの主人公に片思いするけど、報われないキャラっぽい",
+"37.少女マンガでライバルになりそうなふたり",
+"38.意外と脱いだらムキムキ",
+"39.国民の元カレ",
+"40.なかよし3人組",
+"41.しぐさがメロい",
+"42.いちばんバブい",
+"43.いちばん美肌",
+"44.塩抜き中のアサリに名前をつけそう",
+"45.ヘッダーに小さく収めたい",
+"46.となりの席に座りたい",
+"47.いっしょに補講を受けたい",
+"48.テスト前に「全然勉強してない」と言いつつ、わりと勉強してそう",
+"49.修学旅行でいっしょの班になりたい",
+"50.文化祭でテンション上がって、公開告白しそう",
+"51.制服を個性的に着こなしそう",
+"52.お弁当が大きそう",
+"53.ドッチボールでボールが当たらないようにかばってくれそう",
+"54.放課後デートしたい"
+];
+
+
+/* 渡す部門から除外 */
+const excludedGiveNumbers = [1,2,5,12,27,41];
+
+const giveDepartments = departments.filter((d,index) =>
+  !excludedGiveNumbers.includes(index + 1)
+);
+
+
+/* =========================
+   保存データ
+========================= */
+
+let entries =
+JSON.parse(localStorage.getItem("jrAwardWakuEntries")) || [];
+
+let currentManageType = "exchange";
+
+
+/* =========================
+   初期化
+========================= */
+
+function init() {
+
+  const receive = document.getElementById("receiveDepartment");
+  const give = document.getElementById("giveDepartment");
+
+  receive.innerHTML =
+    '<option value="">選択してください</option>';
+
+  give.innerHTML =
+    '<option value="">選択してください</option>';
+
+  departments.forEach(d => {
+    receive.innerHTML +=
+      `<option value="${d}">${d}</option>`;
+  });
+
+  giveDepartments.forEach(d => {
+    give.innerHTML +=
+      `<option value="${d}">${d}</option>`;
+  });
+
+
+  const savedBooks =
+    JSON.parse(localStorage.getItem("jrAwardWakuBooks"));
+
+  if(savedBooks){
+    document.getElementById("normalBooks").value =
+      savedBooks.normal || 0;
+
+    document.getElementById("smallBooks").value =
+      savedBooks.small || 0;
+  }
+
+  updateBookTotal();
+  renderAll();
+}
+
+
+/* =========================
+   購入冊数
+========================= */
+
+function updateBookTotal(){
+
+  const normal =
+    Number(document.getElementById("normalBooks").value) || 0;
+
+  const small =
+    Number(document.getElementById("smallBooks").value) || 0;
+
+  const total = normal + small;
+
+  document.getElementById("bookTotal").textContent = total;
+
+  document.getElementById("departmentBookTotal").textContent =
+    total;
+
+  localStorage.setItem(
+    "jrAwardWakuBooks",
+    JSON.stringify({
+      normal,
+      small
+    })
+  );
+
+  renderDepartments();
+}
+
+
+document.getElementById("normalBooks")
+.addEventListener("input",updateBookTotal);
+
+document.getElementById("smallBooks")
+.addEventListener("input",updateBookTotal);
+
+
+/* =========================
+   交換 / 買取
+========================= */
+
+function changeType(){
+
+  const type =
+    document.querySelector('input[name="type"]:checked').value;
+
+  const area =
+    document.getElementById("giveDepartmentArea");
+
+  if(type === "purchase"){
+    area.classList.add("hidden");
+  }else{
+    area.classList.remove("hidden");
+  }
+}
+
+
+/* =========================
+   登録
+========================= */
+
+function saveEntry(){
+
+  const type =
+    document.querySelector('input[name="type"]:checked').value;
+
+  const partner =
+    document.getElementById("partner").value.trim();
+
+  const partnerMember =
+    document.getElementById("partnerMember").value.trim();
+
+  const receive =
+    document.getElementById("receiveDepartment").value;
+
+  const give =
+    document.getElementById("giveDepartment").value;
+
+  const votes =
+    Number(document.getElementById("votes").value);
+
+  const reason =
+    document.getElementById("reason").value.trim();
+
+  const comment =
+    document.getElementById("comment").value.trim();
+
+
+  if(!partner){
+    alert("交換相手を入力してください");
+    return;
+  }
+
+  if(!receive){
+    alert("貰う部門を選択してください");
+    return;
+  }
+
+  if(type === "exchange" && !give){
+    alert("渡す部門を選択してください");
+    return;
+  }
+
+  if(!votes || votes < 1){
+    alert("票数を入力してください");
+    return;
+  }
+
+
+  const entry = {
+    id: Date.now(),
+    type,
+    partner,
+    partnerMember,
+    receive,
+    give: type === "exchange" ? give : "",
+    votes,
+    reason,
+    comment,
+    written: false,
+    mailed: false
+  };
+
+  entries.push(entry);
+
+  saveEntries();
+
+  document.getElementById("partner").value = "";
+  document.getElementById("partnerMember").value = "";
+  document.getElementById("receiveDepartment").value = "";
+  document.getElementById("giveDepartment").value = "";
+  document.getElementById("votes").value = "";
+  document.getElementById("reason").value = "";
+  document.getElementById("comment").value = "";
+
+  alert("登録しました");
+
+  renderAll();
+}
+
+
+/* =========================
+   保存
+========================= */
+
+function saveEntries(){
+
+  localStorage.setItem(
+    "jrAwardWakuEntries",
+    JSON.stringify(entries)
+  );
+}
+
+
+/* =========================
+   ページ切替
+========================= */
+
+function showPage(pageId,button){
+
+  document.querySelectorAll(".page")
+    .forEach(p => p.classList.remove("active"));
+
+  document.querySelectorAll(".tab")
+    .forEach(t => t.classList.remove("active"));
+
+  document.getElementById(pageId)
+    .classList.add("active");
+
+  button.classList.add("active");
+
+  renderAll();
+}
+
+
+/* =========================
+   部門別管理
+========================= */
+
+function renderDepartments(){
+
+  const totalBooks =
+    (Number(document.getElementById("normalBooks").value) || 0)
+    +
+    (Number(document.getElementById("smallBooks").value) || 0);
+
+
+  const exchangeContainer =
+    document.getElementById("exchangeDepartmentList");
+
+  const purchaseContainer =
+    document.getElementById("purchaseDepartmentList");
+
+
+  exchangeContainer.innerHTML = "";
+
+  giveDepartments.forEach(dept => {
+
+    const used = entries
+      .filter(e =>
+        e.type === "exchange" &&
+        e.give === dept
+      )
+      .reduce((sum,e) => sum + Number(e.votes),0);
+
+
+    const remaining = totalBooks - used;
+
+    const error = used > totalBooks;
+
+    let percent = totalBooks
+      ? (used / totalBooks) * 100
+      : 0;
+
+    percent = Math.min(percent,100);
+
+
+    exchangeContainer.innerHTML += `
+
+      <div class="departmentRow ${error ? "error" : ""}">
+
+        <div class="departmentTop">
+
+          <span class="departmentName">
+            ${dept}
+          </span>
+
+          <span class="departmentCount">
+            ${used} / ${totalBooks}票
+          </span>
+
+        </div>
+
+        <div class="progress">
+          <div
+            class="progressBar"
+            style="width:${percent}%">
+          </div>
+        </div>
+
+        ${
+          error
+          ?
+          `<div class="errorText">
+             ⚠ ${Math.abs(remaining)}票オーバーしています
+           </div>`
+          :
+          `<div class="notice">
+             残り ${Math.max(remaining,0)}票
+           </div>`
+        }
+
+      </div>
+    `;
+  });
+
+
+  purchaseContainer.innerHTML = "";
+
+  departments.forEach(dept => {
+
+    const used = entries
+      .filter(e =>
+        e.type === "purchase" &&
+        e.receive === dept
+      )
+      .reduce((sum,e) => sum + Number(e.votes),0);
+
+
+    purchaseContainer.innerHTML += `
+
+      <div class="departmentRow">
+
+        <div class="departmentTop">
+
+          <span class="departmentName">
+            ${dept}
+          </span>
+
+          <span class="departmentCount">
+            ${used}票
+          </span>
+
+        </div>
+
+      </div>
+    `;
+  });
+
+}
+
+
+/* =========================
+   管理ページ
+========================= */
+
+function showManage(type){
+
+  currentManageType = type;
+
+  document.getElementById("exchangeManageBtn")
+    .classList.toggle("active",type === "exchange");
+
+  document.getElementById("purchaseManageBtn")
+    .classList.toggle("active",type === "purchase");
+
+  renderManage();
+}
+
+
+function renderManage(){
+
+  const container =
+    document.getElementById("manageTable");
+
+  let list =
+    entries.filter(e => e.type === currentManageType);
+
+  list.sort((a,b) => {
+
+    if(a.written === b.written){
+      return a.id - b.id;
+    }
+
+    return a.written ? 1 : -1;
+  });
+
+
+  if(list.length === 0){
+
+    container.innerHTML =
+      `<div class="empty">
+        登録データはありません
+       </div>`;
+
+    return;
+  }
+
+
+  let html = `
+
+  <div class="tableWrap">
+
+  <table>
+
+  <thead>
+
+  <tr>
+    <th>記入済み</th>
+    <th>投函済み</th>
+    <th>交換相手</th>
+    <th>担当</th>
+    <th>貰う部門</th>
+    ${currentManageType === "exchange"
+      ? "<th>渡す部門</th>"
+      : ""}
+    <th>票数</th>
+    <th>理由</th>
+    <th>コメント</th>
+    <th>削除</th>
+  </tr>
+
+  </thead>
+
+  <tbody>
+  `;
+
+
+  list.forEach(e => {
+
+    html += `
+
+    <tr class="${e.mailed ? "mailed" : ""}">
+
+      <td class="status">
+        <input
+          type="checkbox"
+          ${e.written ? "checked" : ""}
+          onchange="toggleWritten(${e.id})">
+      </td>
+
+      <td class="status">
+        <input
+          type="checkbox"
+          ${e.mailed ? "checked" : ""}
+          onchange="toggleMailed(${e.id})">
+      </td>
+
+      <td>${escapeHtml(e.partner)}</td>
+
+      <td>${escapeHtml(e.partnerMember)}</td>
+
+      <td>${escapeHtml(e.receive)}</td>
+
+      ${
+        currentManageType === "exchange"
+        ? `<td>${escapeHtml(e.give)}</td>`
+        : ""
+      }
+
+      <td>${e.votes}票</td>
+
+      <td>${escapeHtml(e.reason)}</td>
+
+      <td>${escapeHtml(e.comment)}</td>
+
+      <td>
+        <button
+          class="deleteBtn"
+          onclick="deleteEntry(${e.id})">
+          🗑️
+        </button>
+      </td>
+
+    </tr>
+    `;
+  });
+
+
+  html += `
+  </tbody>
+  </table>
+  </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+
+/* =========================
+   チェック
+========================= */
+
+function toggleWritten(id){
+
+  const e =
+    entries.find(x => x.id === id);
+
+  if(!e) return;
+
+  e.written = !e.written;
+
+  saveEntries();
+
+  renderManage();
+}
+
+
+function toggleMailed(id){
+
+  const e =
+    entries.find(x => x.id === id);
+
+  if(!e) return;
+
+  e.mailed = !e.mailed;
+
+  saveEntries();
+
+  renderManage();
+}
+
+
+/* =========================
+   削除
+========================= */
+
+function deleteEntry(id){
+
+  if(!confirm("この登録を削除しますか？")){
+    return;
+  }
+
+  entries =
+    entries.filter(e => e.id !== id);
+
+  saveEntries();
+
+  renderAll();
+}
+
+
+/* =========================
+   わく
+========================= */
+
+function renderWaku(){
+
+  const container =
+    document.getElementById("wakuList");
+
+  container.innerHTML = "";
+
+
+  departments.forEach(dept => {
+
+    const exchangeVotes =
+      entries
+      .filter(e =>
+        e.type === "exchange" &&
+        e.receive === dept
+      )
+      .reduce((sum,e) =>
+        sum + Number(e.votes),0);
+
+
+    const purchaseVotes =
+      entries
+      .filter(e =>
+        e.type === "purchase" &&
+        e.receive === dept
+      )
+      .reduce((sum,e) =>
+        sum + Number(e.votes),0);
+
+
+    const total =
+      exchangeVotes + purchaseVotes;
+
+
+    container.innerHTML += `
+
+      <div class="wakuRow">
+
+        <div class="wakuName">
+          ${dept}
+        </div>
+
+        <div class="wakuCount">
+          ${total}票
+        </div>
+
+      </div>
+    `;
+  });
+
+}
+
+
+/* =========================
+   XSS対策
+========================= */
+
+function escapeHtml(value){
+
+  if(!value) return "";
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
+/* =========================
+   全体再描画
+========================= */
+
+function renderAll(){
+
+  renderDepartments();
+  renderManage();
+  renderWaku();
+}
+
+
+/* START */
+
+init();
+
+</script>
+
+</body>
+</html>
