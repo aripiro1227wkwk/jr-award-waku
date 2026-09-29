@@ -1104,7 +1104,6 @@ function deleteEntry(id){
 /* =========================
    わく
 ========================= */
-
 function renderWaku(){
 
   const container =
@@ -1112,9 +1111,14 @@ function renderWaku(){
 
   container.innerHTML = "";
 
+  // わくページは1〜45のみ対象
+  const wakuDepartments = departments.slice(0, 45);
 
-  departments.forEach(dept => {
+  let hasData = false;
 
+  wakuDepartments.forEach(dept => {
+
+    // 交換で「貰う」票数
     const exchangeVotes =
       entries
       .filter(e =>
@@ -1122,9 +1126,10 @@ function renderWaku(){
         e.receive === dept
       )
       .reduce((sum,e) =>
-        sum + Number(e.votes),0);
+        sum + Number(e.votes), 0);
 
 
+    // 買取で登録した票数
     const purchaseVotes =
       entries
       .filter(e =>
@@ -1132,11 +1137,19 @@ function renderWaku(){
         e.receive === dept
       )
       .reduce((sum,e) =>
-        sum + Number(e.votes),0);
+        sum + Number(e.votes), 0);
 
 
     const total =
       exchangeVotes + purchaseVotes;
+
+
+    // 0票の部門は表示しない
+    if(total === 0){
+      return;
+    }
+
+    hasData = true;
 
 
     container.innerHTML += `
@@ -1155,7 +1168,19 @@ function renderWaku(){
     `;
   });
 
+
+  // まだ何も登録されていない場合
+  if(!hasData){
+
+    container.innerHTML = `
+      <div class="empty">
+        まだ登録されている部門はありません
+      </div>
+    `;
+  }
+
 }
+
 
 
 /* =========================
