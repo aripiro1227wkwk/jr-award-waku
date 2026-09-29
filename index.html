@@ -375,6 +375,62 @@ tr.mailed {
   box-shadow: 0 3px 10px rgba(0,0,0,.2);
   z-index: 9999;
 }
+/* 部門別管理の表 */
+
+.departmentTable {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.departmentTable th,
+.departmentTable td {
+  border: 1px solid #ddd;
+  padding: 8px 5px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.departmentTable th {
+  background: #fff0f2;
+  color: #222;
+}
+
+.departmentTable th:first-child {
+  width: 55%;
+}
+
+.departmentTable th:nth-child(2),
+.departmentTable th:nth-child(3) {
+  width: 15%;
+}
+
+.departmentTable th:nth-child(4) {
+  width: 15%;
+}
+
+.departmentNameCell {
+  text-align: left !important;
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+
+.departmentErrorRow {
+  background: #ffe5e9;
+}
+
+.departmentErrorText {
+  color: #e60023;
+  font-weight: bold;
+}
+
+.purchaseTable th:first-child {
+  width: 75%;
+}
+
+.purchaseTable th:nth-child(2) {
+  width: 25%;
+}
 </style>
 </head>
 
@@ -854,103 +910,156 @@ function renderDepartments(){
     document.getElementById("purchaseDepartmentList");
 
 
-  exchangeContainer.innerHTML = "";
+  /* =========================
+     交換
+  ========================= */
+
+  let exchangeHtml = `
+
+    <div class="tableWrap">
+
+      <table class="departmentTable">
+
+        <thead>
+          <tr>
+            <th>部門</th>
+            <th>使用票数</th>
+            <th>残り</th>
+            <th>状態</th>
+          </tr>
+        </thead>
+
+        <tbody>
+  `;
+
 
   giveDepartments.forEach(dept => {
 
-    const used = entries
+    const used =
+      entries
       .filter(e =>
         e.type === "exchange" &&
         e.give === dept
       )
-      .reduce((sum,e) => sum + Number(e.votes),0);
+      .reduce((sum,e) =>
+        sum + Number(e.votes), 0);
 
 
-    const remaining = totalBooks - used;
+    const remaining =
+      totalBooks - used;
 
-    const error = used > totalBooks;
-
-    let percent = totalBooks
-      ? (used / totalBooks) * 100
-      : 0;
-
-    percent = Math.min(percent,100);
+    const error =
+      used > totalBooks;
 
 
-    exchangeContainer.innerHTML += `
+    exchangeHtml += `
 
-      <div class="departmentRow ${error ? "error" : ""}">
+      <tr class="${error ? "departmentErrorRow" : ""}">
 
-        <div class="departmentTop">
+        <td class="departmentNameCell">
+          ${dept}
+        </td>
 
-          <span class="departmentName">
-            ${dept}
-          </span>
+        <td>
+          ${used}票
+        </td>
 
-          <span class="departmentCount">
-            ${used} / ${totalBooks}票
-          </span>
+        <td>
+          ${remaining}票
+        </td>
 
-        </div>
+        <td class="${error ? "departmentErrorText" : ""}">
+          ${
+            error
+            ? `⚠️ ${Math.abs(remaining)}票超過`
+            : "OK"
+          }
+        </td>
 
-        <div class="progress">
-          <div
-            class="progressBar"
-            style="width:${percent}%">
-          </div>
-        </div>
-
-        ${
-          error
-          ?
-          `<div class="errorText">
-             ⚠ ${Math.abs(remaining)}票オーバーしています
-           </div>`
-          :
-          `<div class="notice">
-             残り ${Math.max(remaining,0)}票
-           </div>`
-        }
-
-      </div>
+      </tr>
     `;
   });
 
 
-  purchaseContainer.innerHTML = "";
+  exchangeHtml += `
+
+        </tbody>
+
+      </table>
+
+    </div>
+  `;
+
+
+  exchangeContainer.innerHTML =
+    exchangeHtml;
+
+
+
+  /* =========================
+     買取
+  ========================= */
+
+  let purchaseHtml = `
+
+    <div class="tableWrap">
+
+      <table class="departmentTable purchaseTable">
+
+        <thead>
+          <tr>
+            <th>部門</th>
+            <th>買取票数</th>
+          </tr>
+        </thead>
+
+        <tbody>
+  `;
+
 
   departments.forEach(dept => {
 
-    const used = entries
+    const used =
+      entries
       .filter(e =>
         e.type === "purchase" &&
         e.receive === dept
       )
-      .reduce((sum,e) => sum + Number(e.votes),0);
+      .reduce((sum,e) =>
+        sum + Number(e.votes), 0);
 
 
-    purchaseContainer.innerHTML += `
+    purchaseHtml += `
 
-      <div class="departmentRow">
+      <tr>
 
-        <div class="departmentTop">
+        <td class="departmentNameCell">
+          ${dept}
+        </td>
 
-          <span class="departmentName">
-            ${dept}
-          </span>
+        <td>
+          ${used}票
+        </td>
 
-          <span class="departmentCount">
-            ${used}票
-          </span>
-
-        </div>
-
-      </div>
+      </tr>
     `;
   });
 
-}
 
+  purchaseHtml += `
+
+        </tbody>
+
+      </table>
+
+    </div>
+  `;
+
+
+  purchaseContainer.innerHTML =
+    purchaseHtml;
+
+}
 
 /* =========================
    管理ページ
