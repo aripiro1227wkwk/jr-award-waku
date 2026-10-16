@@ -1,0 +1,11 @@
+{
+  "name": "ジュニア大賞交換枠管理リスト",
+  "short_name": "交換枠管理",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff7f8",
+  "theme_color": "#ff8b91",
+  "icons": [
+    {"src": "/icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

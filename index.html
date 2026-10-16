@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ジュニア大賞交換枠管理リスト</title>
+<link rel="icon" type="image/png" sizes="512x512" href="/icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#ff8b91">
 
 <style>
 * {
@@ -663,7 +667,18 @@ const departments = [
 "51.制服を個性的に着こなしそう",
 "52.お弁当が大きそう",
 "53.ドッチボールでボールが当たらないようにかばってくれそう",
-"54.放課後デートしたい"
+"54.放課後デートしたい",
+"55.いちばんえらい",
+"56.ドーパミンがいっぱい出てそう",
+"57.いちばんギャル",
+"58.AIに名前つけてそう",
+"59.いちばん漢",
+"60.シール帳が充実してそう",
+"61.いちばん手がきれい",
+"62.風呂キャンセルしたら怒ってきそう",
+"63.自分がなりたいジュニア",
+"64.横顔がきれい",
+"65.教室で窓際の一番奥に座ってそう"
 ];
 
 
@@ -1381,8 +1396,8 @@ function renderWaku(){
 
   container.innerHTML = "";
 
-  // わくページは1〜45のみ対象
-  const wakuDepartments = departments.slice(0, 45);
+  // 全部門を集計対象にする（55〜65を含む）
+  const wakuDepartments = departments;
 
   let hasData = false;
 
