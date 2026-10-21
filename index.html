@@ -444,6 +444,11 @@ tr.mailed {
   text-align: center;
   vertical-align: middle;
 }
+/* 廃止部門は現行55部門の後ろに、赤文字で表示 */
+.deletedDepartmentRow { background: #fff0f1 !important; }
+.deletedDepartmentRow .departmentNameCell,
+.deletedDepartmentRow .wakuName,
+.deletedDepartmentText { color: #c00020 !important; font-weight: bold; }
 </style>
 </head>
 
@@ -613,82 +618,175 @@ tr.mailed {
    今後追加するときはここに追加
 ========================= */
 
+/* 2026年度部門：旧番号の保存データは変更せず、画面表示で読み替えます */
 const departments = [
-"1.恋人にしたい",
-"2.友だちにしたい",
-"3.弟にしたい",
-"4.お兄さんにしたい",
-"5.先輩になってほしい",
-"6.後輩になってほしい",
-"7.学校の先生になってほしい",
-"8.キスしてみたい",
-"9.いちばんおしゃれ",
-"10.私服がダサそう",
-"11.いちばんセクシー",
-"12.いちばんおもしろい",
-"13.いちばん美形",
-"14.いちばん美声",
-"15.ダンスがカッコいい",
-"16.グローバルに活躍しそう",
-"17.演技がうまい",
-"18.絵が下手そう",
-"19.恋人に尽くしそう",
-"20.女装が似合いそう",
-"21.秒でメールの返信がきそう",
-"22.天然キャラっぽい",
-"23.泣き虫そう",
-"24.ナルシストっぽい",
-"25.ニュースキャスターになりそう",
-"26.いちばんいいコンビ",
-"27.私のリア恋枠",
-"28.いちばんMCがうまい",
-"29.意外とメガネが似合いそう",
-"30.御曹司っぽい",
-"31.手料理が食べたい",
-"32.いい匂いがしそう",
-"33.いちばんもちもち",
-"34.犬っぽい",
-"35.猫っぽい",
-"36.少女マンガの主人公に片思いするけど、報われないキャラっぽい",
-"37.少女マンガでライバルになりそうなふたり",
-"38.意外と脱いだらムキムキ",
-"39.国民の元カレ",
-"40.なかよし3人組",
-"41.しぐさがメロい",
-"42.いちばんバブい",
-"43.いちばん美肌",
-"44.塩抜き中のアサリに名前をつけそう",
-"45.ヘッダーに小さく収めたい",
-"46.となりの席に座りたい",
-"47.いっしょに補講を受けたい",
-"48.テスト前に「全然勉強してない」と言いつつ、わりと勉強してそう",
-"49.修学旅行でいっしょの班になりたい",
-"50.文化祭でテンション上がって、公開告白しそう",
-"51.制服を個性的に着こなしそう",
-"52.お弁当が大きそう",
-"53.ドッチボールでボールが当たらないようにかばってくれそう",
-"54.放課後デートしたい",
-"55.いちばんえらい",
-"56.ドーパミンがいっぱい出てそう",
-"57.いちばんギャル",
-"58.AIに名前つけてそう",
-"59.いちばん漢",
-"60.シール帳が充実してそう",
-"61.いちばん手がきれい",
-"62.風呂キャンセルしたら怒ってきそう",
-"63.自分がなりたいジュニア",
-"64.横顔がきれい",
-"65.教室で窓際の一番奥に座ってそう"
+  "1.恋人にしたい",
+  "2.友だちにしたい",
+  "3.弟にしたい",
+  "4.お兄さんにしたい",
+  "5.先輩になってほしい",
+  "6.後輩になってほしい",
+  "7.学校の先生になってほしい",
+  "8.いちばんおしゃれ",
+  "9.私服がダサそう",
+  "10.いちばんセクシー",
+  "11.いちばんおもしろい",
+  "12.いちばん美声",
+  "13.ダンスがカッコいい",
+  "14.グローバルに活躍しそう",
+  "15.演技がうまい",
+  "16.絵が下手そう",
+  "17.恋人に尽くしそう",
+  "18.女装が似合いそう",
+  "19.秒でメールの返信がきそう",
+  "20.泣き虫そう",
+  "21.ナルシストっぽい",
+  "22.ニュースキャスターになりそう",
+  "23.いちばんいいコンビ",
+  "24.私のリア恋枠",
+  "25.いちばんMCがうまい",
+  "26.意外とメガネが似合いそう",
+  "27.御曹司っぽい",
+  "28.手料理が食べたい",
+  "29.いちばんもちもち",
+  "30.犬っぽい",
+  "31.猫っぽい",
+  "32.少女マンガの主人公に片思いするけど、報われないキャラっぽい",
+  "33.意外と脱いだらムキムキ",
+  "34.なかよし3人組",
+  "35.いちばんバブい",
+  "36.ドーパミンがいっぱい出てそう",
+  "37.AIに名前つけてそう",
+  "38.シール帳が充実してそう",
+  "39.風呂キャンセルしたら怒ってきそう",
+  "40.横顔がきれい",
+  "41.いちばんえらい",
+  "42.いちばんギャル",
+  "43.いちばん漢",
+  "44.いちばん手がきれい",
+  "45.自分がなりたいジュニア",
+  "46.となりの席に座りたい",
+  "47.いっしょに補講を受けたい",
+  "48.テスト前に「全然勉強してない」と言いつつ、わりと勉強してそう",
+  "49.修学旅行でいっしょの班になりたい",
+  "50.文化祭でテンション上がって、公開告白しそう",
+  "51.制服を個性的に着こなしそう",
+  "52.お弁当が大きそう",
+  "53.ドッチボールでボールが当たらないようにかばってくれそう",
+  "54.放課後デートしたい",
+  "55.教室で窓際のいちばん奥に座ってそう"
 ];
 
+const deletedDepartments = [
+  "8.キスしてみたい",
+  "13.いちばん美形",
+  "22.天然キャラっぽい",
+  "32.いい匂いがしそう",
+  "37.少女マンガでライバルになりそうなふたり",
+  "39.国民の元カレ",
+  "41.しぐさがメロい",
+  "43.いちばん美肌",
+  "44.塩抜き中のアサリに名前をつけそう",
+  "45.ヘッダーに小さく収めたい"
+];
 
-/* 渡す部門から除外 */
-const excludedGiveNumbers = [1,2,5,12,27,41];
+const legacyDepartmentMap = {
+  "1.恋人にしたい": "1.恋人にしたい",
+  "2.友だちにしたい": "2.友だちにしたい",
+  "3.弟にしたい": "3.弟にしたい",
+  "4.お兄さんにしたい": "4.お兄さんにしたい",
+  "5.先輩になってほしい": "5.先輩になってほしい",
+  "6.後輩になってほしい": "6.後輩になってほしい",
+  "7.学校の先生になってほしい": "7.学校の先生になってほしい",
+  "9.いちばんおしゃれ": "8.いちばんおしゃれ",
+  "10.私服がダサそう": "9.私服がダサそう",
+  "11.いちばんセクシー": "10.いちばんセクシー",
+  "12.いちばんおもしろい": "11.いちばんおもしろい",
+  "14.いちばん美声": "12.いちばん美声",
+  "15.ダンスがカッコいい": "13.ダンスがカッコいい",
+  "16.グローバルに活躍しそう": "14.グローバルに活躍しそう",
+  "17.演技がうまい": "15.演技がうまい",
+  "18.絵が下手そう": "16.絵が下手そう",
+  "19.恋人に尽くしそう": "17.恋人に尽くしそう",
+  "20.女装が似合いそう": "18.女装が似合いそう",
+  "21.秒でメールの返信がきそう": "19.秒でメールの返信がきそう",
+  "23.泣き虫そう": "20.泣き虫そう",
+  "24.ナルシストっぽい": "21.ナルシストっぽい",
+  "25.ニュースキャスターになりそう": "22.ニュースキャスターになりそう",
+  "26.いちばんいいコンビ": "23.いちばんいいコンビ",
+  "27.私のリア恋枠": "24.私のリア恋枠",
+  "28.いちばんMCがうまい": "25.いちばんMCがうまい",
+  "29.意外とメガネが似合いそう": "26.意外とメガネが似合いそう",
+  "30.御曹司っぽい": "27.御曹司っぽい",
+  "31.手料理が食べたい": "28.手料理が食べたい",
+  "33.いちばんもちもち": "29.いちばんもちもち",
+  "34.犬っぽい": "30.犬っぽい",
+  "35.猫っぽい": "31.猫っぽい",
+  "36.少女マンガの主人公に片思いするけど、報われないキャラっぽい": "32.少女マンガの主人公に片思いするけど、報われないキャラっぽい",
+  "38.意外と脱いだらムキムキ": "33.意外と脱いだらムキムキ",
+  "40.なかよし3人組": "34.なかよし3人組",
+  "42.いちばんバブい": "35.いちばんバブい",
+  "46.となりの席に座りたい": "46.となりの席に座りたい",
+  "47.いっしょに補講を受けたい": "47.いっしょに補講を受けたい",
+  "48.テスト前に「全然勉強してない」と言いつつ、わりと勉強してそう": "48.テスト前に「全然勉強してない」と言いつつ、わりと勉強してそう",
+  "49.修学旅行でいっしょの班になりたい": "49.修学旅行でいっしょの班になりたい",
+  "50.文化祭でテンション上がって、公開告白しそう": "50.文化祭でテンション上がって、公開告白しそう",
+  "51.制服を個性的に着こなしそう": "51.制服を個性的に着こなしそう",
+  "52.お弁当が大きそう": "52.お弁当が大きそう",
+  "53.ドッチボールでボールが当たらないようにかばってくれそう": "53.ドッチボールでボールが当たらないようにかばってくれそう",
+  "54.放課後デートしたい": "54.放課後デートしたい",
+  "55.いちばんえらい": "41.いちばんえらい",
+  "56.ドーパミンがいっぱい出てそう": "36.ドーパミンがいっぱい出てそう",
+  "57.いちばんギャル": "42.いちばんギャル",
+  "58.AIに名前つけてそう": "37.AIに名前つけてそう",
+  "59.いちばん漢": "43.いちばん漢",
+  "60.シール帳が充実してそう": "38.シール帳が充実してそう",
+  "61.いちばん手がきれい": "44.いちばん手がきれい",
+  "62.風呂キャンセルしたら怒ってきそう": "39.風呂キャンセルしたら怒ってきそう",
+  "63.自分がなりたいジュニア": "45.自分がなりたいジュニア",
+  "64.横顔がきれい": "40.横顔がきれい",
+  "65.教室で窓際の一番奥に座ってそう": "55.教室で窓際のいちばん奥に座ってそう"
+};
 
-const giveDepartments = departments.filter((d,index) =>
-  !excludedGiveNumbers.includes(index + 1)
+/* 渡す部門の除外：旧1,2,5,12,27と対応（旧41は廃止） */
+const excludedGiveNumbers = [1, 2, 5, 11, 24];
+const giveDepartments = departments.filter(d =>
+  !excludedGiveNumbers.includes(Number(d.split(".", 1)[0]))
 );
 
+function resolveDepartment(value) {
+  return Object.prototype.hasOwnProperty.call(legacyDepartmentMap, value)
+    ? legacyDepartmentMap[value]
+    : value;
+}
+
+function isDeletedDepartment(value) {
+  return deletedDepartments.includes(value);
+}
+
+function displayDepartment(value) {
+  if (!value) return "";
+  return isDeletedDepartment(value) ? `削除 ${value}` : resolveDepartment(value);
+}
+
+function setDepartmentSelection(selectId, savedValue) {
+  const select = document.getElementById(selectId);
+  const value = resolveDepartment(savedValue || "");
+  if (savedValue && isDeletedDepartment(savedValue)) {
+    const option = document.createElement("option");
+    option.value = savedValue;
+    option.textContent = displayDepartment(savedValue) + "（過去の登録）";
+    option.dataset.legacy = "true";
+    select.appendChild(option);
+    select.value = savedValue;
+  } else {
+    select.value = value;
+  }
+}
+
+function removeLegacyOptions() {
+  document.querySelectorAll('option[data-legacy="true"]').forEach(option => option.remove());
+}
 
 /* =========================
    保存データ
@@ -852,6 +950,11 @@ function saveEntry(){
   }
 
 
+   if (editingId === null && (isDeletedDepartment(receive) || isDeletedDepartment(give))) {
+     alert("廃止部門への新規登録はできません");
+     return;
+   }
+
    if(editingId !== null){
 
     const index =
@@ -900,6 +1003,7 @@ function saveEntry(){
 
   saveEntries();
 
+  removeLegacyOptions();
   document.getElementById("partner").value = "";
   document.getElementById("partnerMember").value = "";
   document.getElementById("receiveDepartment").value = "";
@@ -990,13 +1094,13 @@ function renderDepartments(){
   `;
 
 
-  giveDepartments.forEach(dept => {
+  [...giveDepartments, ...deletedDepartments].forEach(dept => {
 
     const used =
       entries
       .filter(e =>
         e.type === "exchange" &&
-        e.give === dept
+        resolveDepartment(e.give) === dept
       )
       .reduce((sum,e) =>
         sum + Number(e.votes), 0);
@@ -1011,10 +1115,10 @@ function renderDepartments(){
 
     exchangeHtml += `
 
-      <tr class="${error ? "departmentErrorRow" : ""}">
+      <tr class="${isDeletedDepartment(dept) ? "deletedDepartmentRow " : ""}${error ? "departmentErrorRow" : ""}">
 
         <td class="departmentNameCell">
-          ${dept}
+          ${escapeHtml(displayDepartment(dept))}
         </td>
 
         <td>
@@ -1074,13 +1178,13 @@ function renderDepartments(){
   `;
 
 
-  departments.forEach(dept => {
+  [...departments, ...deletedDepartments].forEach(dept => {
 
     const used =
       entries
       .filter(e =>
         e.type === "purchase" &&
-        e.receive === dept
+        resolveDepartment(e.receive) === dept
       )
       .reduce((sum,e) =>
         sum + Number(e.votes), 0);
@@ -1088,10 +1192,10 @@ function renderDepartments(){
 
     purchaseHtml += `
 
-      <tr>
+      <tr class="${isDeletedDepartment(dept) ? "deletedDepartmentRow" : ""}">
 
         <td class="departmentNameCell">
-          ${dept}
+          ${escapeHtml(displayDepartment(dept))}
         </td>
 
         <td>
@@ -1219,11 +1323,11 @@ function renderManage(){
 
       <td>${escapeHtml(e.partnerMember)}</td>
 
-      <td>${escapeHtml(e.receive)}</td>
+      <td class="${isDeletedDepartment(e.receive) ? "deletedDepartmentText" : ""}">${escapeHtml(displayDepartment(e.receive))}</td>
 
       ${
         currentManageType === "exchange"
-        ? `<td>${escapeHtml(e.give)}</td>`
+        ? `<td class="${isDeletedDepartment(e.give) ? "deletedDepartmentText" : ""}">${escapeHtml(displayDepartment(e.give))}</td>`
         : ""
       }
 
@@ -1325,11 +1429,9 @@ function editEntry(id){
   document.getElementById("partnerMember").value =
     e.partnerMember || "";
 
-  document.getElementById("receiveDepartment").value =
-    e.receive || "";
-
-  document.getElementById("giveDepartment").value =
-    e.give || "";
+  removeLegacyOptions();
+  setDepartmentSelection("receiveDepartment", e.receive);
+  setDepartmentSelection("giveDepartment", e.give);
 
   document.getElementById("votes").value =
     e.votes || "";
@@ -1397,7 +1499,7 @@ function renderWaku(){
   container.innerHTML = "";
 
   // 全部門を集計対象にする（55〜65を含む）
-  const wakuDepartments = departments;
+  const wakuDepartments = [...departments, ...deletedDepartments];
 
   let hasData = false;
 
@@ -1408,7 +1510,7 @@ function renderWaku(){
       entries
       .filter(e =>
         e.type === "exchange" &&
-        e.receive === dept
+        resolveDepartment(e.receive) === dept
       )
       .reduce((sum,e) =>
         sum + Number(e.votes), 0);
@@ -1419,7 +1521,7 @@ function renderWaku(){
       entries
       .filter(e =>
         e.type === "purchase" &&
-        e.receive === dept
+        resolveDepartment(e.receive) === dept
       )
       .reduce((sum,e) =>
         sum + Number(e.votes), 0);
@@ -1439,10 +1541,10 @@ function renderWaku(){
 
     container.innerHTML += `
 
-      <div class="wakuRow">
+      <div class="wakuRow ${isDeletedDepartment(dept) ? "deletedDepartmentRow" : ""}">
 
         <div class="wakuName">
-          ${dept}
+          ${escapeHtml(displayDepartment(dept))}
         </div>
 
         <div class="wakuCount">
