@@ -435,6 +435,10 @@ tr.mailed {
 .purchaseTable th:nth-child(2) {
   width: 25%;
 }
+/* 廃止部門は見た目だけ変更し、保存される部門名はそのまま */
+tr.abolishedRow { background: #fff0f2; }
+.abolishedName { color: #b50020; text-decoration: line-through; text-decoration-thickness: 1px; }
+.wakuRow.abolishedRow { background: #fff0f2; border-color: #ffd2d9; }
 /* 管理ページの表見出しを折り返す */
 #manageTable th {
   white-space: normal;
@@ -682,6 +686,22 @@ const departments = [
 ];
 
 
+/* 2026年改訂で廃止となった旧部門番号。値・集計・保存形式は変えない。 */
+const abolishedDepartmentNumbers = new Set([8,13,22,32,37,39,41,43,44,45]);
+function isAbolishedDepartment(dept) {
+  const matched = String(dept || "").match(/^(\d+)\./);
+  return !!matched && abolishedDepartmentNumbers.has(Number(matched[1]));
+}
+function displayDepartmentText(dept) {
+  return (isAbolishedDepartment(dept) ? "【廃止】" : "") + String(dept || "");
+}
+function displayDepartmentHtml(dept) {
+  const text = escapeHtml(String(dept || ""));
+  return isAbolishedDepartment(dept)
+    ? `<span class="abolishedName">${text}</span>`
+    : text;
+}
+
 /* 渡す部門から除外 */
 const excludedGiveNumbers = [1,2,5,12,27,41];
 
@@ -717,12 +737,12 @@ function init() {
 
   departments.forEach(d => {
     receive.innerHTML +=
-      `<option value="${d}">${d}</option>`;
+      `<option value="${d}">${displayDepartmentText(d)}</option>`;
   });
 
   giveDepartments.forEach(d => {
     give.innerHTML +=
-      `<option value="${d}">${d}</option>`;
+      `<option value="${d}">${displayDepartmentText(d)}</option>`;
   });
 
 
@@ -1011,10 +1031,10 @@ function renderDepartments(){
 
     exchangeHtml += `
 
-      <tr class="${error ? "departmentErrorRow" : ""}">
+      <tr class="${[error ? "departmentErrorRow" : "", isAbolishedDepartment(dept) ? "abolishedRow" : ""].filter(Boolean).join(" ")}">
 
         <td class="departmentNameCell">
-          ${dept}
+          ${displayDepartmentHtml(dept)}
         </td>
 
         <td>
@@ -1088,10 +1108,10 @@ function renderDepartments(){
 
     purchaseHtml += `
 
-      <tr>
+      <tr class="${isAbolishedDepartment(dept) ? "abolishedRow" : ""}">
 
         <td class="departmentNameCell">
-          ${dept}
+          ${displayDepartmentHtml(dept)}
         </td>
 
         <td>
@@ -1219,11 +1239,11 @@ function renderManage(){
 
       <td>${escapeHtml(e.partnerMember)}</td>
 
-      <td>${escapeHtml(e.receive)}</td>
+      <td class="${isAbolishedDepartment(e.receive) ? "abolishedRow" : ""}">${displayDepartmentHtml(e.receive)}</td>
 
       ${
         currentManageType === "exchange"
-        ? `<td>${escapeHtml(e.give)}</td>`
+        ? `<td class="${isAbolishedDepartment(e.give) ? "abolishedRow" : ""}">${displayDepartmentHtml(e.give)}</td>`
         : ""
       }
 
@@ -1439,10 +1459,10 @@ function renderWaku(){
 
     container.innerHTML += `
 
-      <div class="wakuRow">
+      <div class="wakuRow ${isAbolishedDepartment(dept) ? "abolishedRow" : ""}">
 
         <div class="wakuName">
-          ${dept}
+          ${displayDepartmentHtml(dept)}
         </div>
 
         <div class="wakuCount">
